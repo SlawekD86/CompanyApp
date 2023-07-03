@@ -2,86 +2,79 @@ const Department = require('../models/department.model');
 
 exports.getAll = async (req, res) => {
   try {
-    res.json(await Department.find({}));
-  }
-  catch(err) {
-    res.status(500).json({ message: err });
+    const departments = await Department.find({});
+    res.json(departments);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
   }
 };
 
 exports.getRandom = async (req, res) => {
-
   try {
     const count = await Department.countDocuments();
     const rand = Math.floor(Math.random() * count);
-    const dep = await Department.findOne().skip(rand);
-    if(!dep) res.status(404).json({ message: 'Not found' });
-    else res.json(dep);
+    const department = await Department.findOne().skip(rand);
+    if (!department) {
+      res.status(404).json({ message: 'Not found' });
+    } else {
+      res.json(department);
+    }
+  } catch (err) {
+    res.status(500).json({ message: err.message });
   }
-  catch(err) {
-    res.status(500).json({ message: err });
-  }
-
 };
 
 exports.getById = async (req, res) => {
-
   try {
-    const dep = await Department.findById(req.params.id);
-    if(!dep) res.status(404).json({ message: 'Not found' });
-    else res.json(dep);
+    const department = await Department.findById(req.params.id);
+    if (!department) {
+      res.status(404).json({ message: 'Not found' });
+    } else {
+      res.json(department);
+    }
+  } catch (err) {
+    res.status(500).json({ message: err.message });
   }
-  catch(err) {
-    res.status(500).json({ message: err });
-  }
-
 };
 
-exports.post = async (req, res) => {
-
+exports.create = async (req, res) => {
   try {
-
     const { name } = req.body;
-    const newDepartment = new Department({ name: name });
+    const newDepartment = new Department({ name });
     await newDepartment.save();
     res.json({ message: 'OK' });
-
-  } catch(err) {
-    res.status(500).json({ message: err });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
   }
-
 };
 
 exports.update = async (req, res) => {
   const { name } = req.body;
-
   try {
-    const dep = await Department.findById(req.params.id);
-    if(dep) {
-      await Department.updateOne({ _id: req.params.id }, { $set: { name: name }});
-      res.json({ message: 'Document edited', dep });
+    const department = await Department.findByIdAndUpdate(
+      req.params.id,
+      { name },
+      { new: true }
+    );
+    if (!department) {
+      res.status(404).json({ message: 'Not found' });
+    } else {
+      res.json({ message: 'Document edited', department });
     }
-    else res.status(404).json({ message: 'Not found...' });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
   }
-  catch(err) {
-    res.status(500).json({ message: err });
-  }
-
 };
 
 exports.delete = async (req, res) => {
-
   try {
-    const dep = await Department.findById(req.params.id);
-    if(dep) {
-      await Department.deleteOne({ _id: req.params.id });
-      res.json({ message: 'Deleted', dep });
+    const department = await Department.findByIdAndDelete(req.params.id);
+    if (!department) {
+      res.status(404).json({ message: 'Not found' });
+    } else {
+      res.json({ message: 'Deleted', department });
     }
-    else res.status(404).json({ message: 'Not found...' });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
   }
-  catch(err) {
-    res.status(500).json({ message: err });
-  }
-
-
 };
