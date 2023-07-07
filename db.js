@@ -28,7 +28,7 @@ let db = {
   ],
   departments: [
     { name: 'IT' },
-    { name: 'Marketing' },
+    { name:'Marketing' },
     { name: 'Testing' }
   ],
   products: [
